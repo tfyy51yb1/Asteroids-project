@@ -1,6 +1,6 @@
 #lang racket
 (require racket/gui)
-(require "asteroids.rkt")
+
 (define rotating-image%
   (class object%
     (init-field [image (make-bitmap 100 100)]
