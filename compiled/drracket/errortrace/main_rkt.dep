@@ -1,1 +1,0 @@
-("6.3" ("50d1820f4d8de4dd49dda317ca9bfd06d9961f77" . "47a9178b3e2932171a54adef7f1e2797f221570b") #"C:\\Users\\Oscar\\Documents\\GitHub\\Asteroids-project\\game.rkt" #"C:\\Users\\Oscar\\Documents\\GitHub\\Asteroids-project\\ship.rkt" (collects #"racket" #"gui.rkt") (collects #"racket" #"main.rkt") (collects #"racket" #"runtime-config.rkt"))
