@@ -100,7 +100,7 @@
                     
                     ;; Drawing
                     (send dc draw-bitmap image xpos ypos)
-                    
+
                     ;; Physics
                     (set! xpos (+ xpos dx))
                     (set! ypos (+ ypos dy))

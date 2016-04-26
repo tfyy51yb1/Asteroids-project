@@ -42,7 +42,7 @@
     ;; so that bullets are created at the front of the ship, irregardless of the
     ;; ship's direction.
     (define/private (fire)
-      (hash-set! bullet-hash (gensym "bullet") (make-object bullet% xpos ypos dx dy)))
+      (hash-set! bullet-hash this (make-object bullet% xpos ypos dx dy)))
     
     ;; Method for handling key-events. When the 'w' key is pressed we increase
     ;; the speed of the ship, unless the ship is going to fast already, and
