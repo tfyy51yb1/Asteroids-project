@@ -1,22 +1,31 @@
 #lang racket
 (require racket/gui)
-(require "bullet.rkt")
 (provide game%)
 
-
-(define (screen-wrap obj)
-  (let* ([xpos (get-field xpos obj)]
-         [ypos (get-field ypos obj)])
-    (cond
-      [(> xpos 1920) (set! xpos 0)]
-      [(< xpos 0) (set! xpos 1920)]
-      [(> ypos 1080) (set! ypos 0)]
-      [(< ypos 0) (set! ypos 1080)])
-    (set-field! xpos obj xpos)
-    (set-field! ypos obj ypos)))
-
+;; game% is a class which handles the game's
+;; physics, logic and drawing.
 (define game%
   (class object%
+    
+    ;; screen-wrap is a method used to simulate
+    ;; that the screen "wraps around the edges",
+    ;; i.e. when an object, obj, passes outside
+    ;; of the screen on one side, it reappears
+    ;; at the opposite side.
+    (define (screen-wrap obj)
+      (let* ([xpos (get-field xpos obj)]
+             [ypos (get-field ypos obj)])
+        (cond
+          [(> xpos 1920) (set! xpos 0)]
+          [(< xpos 0) (set! xpos 1920)]
+          [(> ypos 1080) (set! ypos 0)]
+          [(< ypos 0) (set! ypos 1080)])
+        (set-field! xpos obj xpos)
+        (set-field! ypos obj ypos)))
+    
+    ;; update-ship uses parameters provided by the
+    ;; ship object, calculates the ship's new position
+    ;; and renders it.
     (define (update-ship ship dc)
       (let* ([image (send ship get-image)]
              [image-width (send image get-width)]
@@ -27,8 +36,8 @@
              [dy (get-field dy ship)]
              [angle (get-field angle ship)]
              [speed (get-field speed ship)])
-        (set! xpos (+ xpos dx))
-        (set! ypos (+ ypos dy))
+        
+        ;; Drawing
         (send dc translate (+ xpos (/ image-width 2))
               (+ ypos (/ image-height 2)))
         (send dc rotate angle)
@@ -38,16 +47,21 @@
         (send dc translate (- (+ xpos (/ image-width 2)))
               (- (+ ypos (/ image-height 2))))
         
+        ;; Physics
+        (set! xpos (+ xpos dx))
+        (set! ypos (+ ypos dy))
         (set! dx (* dx 0.99))
         (set! dy (* dy 0.99))
         (set-field! xpos ship xpos)
         (set-field! ypos ship ypos)
         (set-field! dx ship dx)
         (set-field! dy ship dy)
-        (set-field! angle ship angle)
-        (set-field! speed ship speed)
         (screen-wrap ship)))
     
+    ;; update-ship uses parameters provided by
+    ;; bullet objects, which are stored in the bullet-hash,
+    ;; calculates the bullets' new positions and draws them.
+    ;; Currently, eh, unusable, to say the least...
     (define (update-bullets bullet-hash dc)
       (for-each (lambda (bullet)
                   (let*  ([image (send bullet get-image)]
@@ -58,21 +72,21 @@
                           [ypos (get-field ypos bullet)]
                           [dx (get-field dx bullet)]
                           [dy (get-field dy bullet)])
-                    (cond
-                      [(> xpos 1920) (set! xpos 0) (set! ypos (- 1080 ypos))]
-                      [(< xpos 0) (set! xpos 1920) (set! ypos (- 1080 ypos))]
-                      [(> ypos 1080) (set! ypos 0) (set! xpos (- 1920 xpos))]
-                      [(< ypos 0) (set! ypos 1080) (set! xpos (- 1920 xpos))])
+                    
+                    ;; Drawing
+                    (send dc draw-bitmap image xpos ypos)
+                    
+                    ;; Physics
                     (set! xpos (+ xpos dx))
                     (set! ypos (+ ypos dy))
-                    (send dc draw-bitmap image xpos ypos)
                     (set-field! xpos bullet xpos)
                     (set-field! ypos bullet ypos)
-                    (set-field! dy bullet dy)
-                    (set-field! dx bullet dx)
                     (screen-wrap bullet)))
                 (hash-values bullet-hash)))
     
+    ;; update-asteroids uses parameters provided by
+    ;; asteroid objects, which are stored in the asteroid-hash,
+    ;; calculates the asteroids' new positions and draws them.
     (define (update-asteroids asteroids-hash dc)
       (for-each (lambda (asteroid)
                   (let* ([image (send asteroid get-image)]
@@ -84,14 +98,12 @@
                          [dx (get-field dx asteroid)]
                          [dy (get-field dy asteroid)])
                     
-                    (cond
-                      [(> xpos 1920) (set! xpos 0) (set! ypos (- 1080 ypos))]
-                      [(< xpos 0) (set! xpos 1920) (set! ypos (- 1080 ypos))]
-                      [(> ypos 1080) (set! ypos 0) (set! xpos (- 1920 xpos))]
-                      [(< ypos 0) (set! ypos 1080) (set! xpos (- 1920 xpos))])
+                    ;; Drawing
+                    (send dc draw-bitmap image xpos ypos)
+
+                    ;; Physics
                     (set! xpos (+ xpos dx))
                     (set! ypos (+ ypos dy))
-                    (send dc draw-bitmap image xpos ypos)
                     (set-field! xpos asteroid xpos)
                     (set-field! ypos asteroid ypos)
                     (set-field! dy asteroid dy)
@@ -99,9 +111,11 @@
                     (screen-wrap asteroid)))
                 (hash-values asteroids-hash)))
     
+    ;; The acctual rendering method. Is called by the on-paint method
+    ;; provided by the game-canvas% class. render just calls the update methods
+    ;; above.
     (define/public (render ship bullet-hash asteroids-hash dc)
       (update-ship ship dc)
       (update-asteroids asteroids-hash dc)
       (update-bullets bullet-hash dc))
-    
     (super-new)))

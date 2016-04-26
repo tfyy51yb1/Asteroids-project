@@ -3,22 +3,24 @@
 (provide ship%)
 (require "bullet.rkt")
 
-
+;; ship% contains information for creating and handling
+;; the input to ships.
 (define ship%
   (class object%
-    (init-field [xpos 200]
-                [ypos 200]
-                [dx 0]
-                [dy 0]
-                [speed 0]
-                [angle 0]
-                [image (make-bitmap 100 100)])
+    (init-field [xpos 200] ;The ship's x-coordinate.
+                [ypos 200] ;The ship's y-coordinate.
+                [dx 0] ;The ship's speed in the x-direction.
+                [dy 0] ;The ship's speed in the y-direction.
+                [speed 0] ;The velocity.
+                [angle (/ pi 4)] ;The angle at which the ship is turned.
+                [image (make-bitmap 100 100)]) ;A bitmap to draw the ship in.
     
 
-    
+    ;; Method which provides the bitmap.
     (define/public (get-image)
       image)
-    
+
+    ;; Method for drawing the ship in the bitmap.
     (define/private (create-ship-image bitmap-target)
       (let ((dc (new bitmap-dc% [bitmap bitmap-target])))
         (send dc draw-line
@@ -34,18 +36,27 @@
               100 100
               50 75)))
     
+    ;; Currently out of order... The idea is to create instances of the bullet%
+    ;; class when the ship fires, add these to a hash table and then update
+    ;; everything in the hash table by using game%. We need to find som expresion
+    ;; so that bullets are created at the front of the ship, irregardless of the
+    ;; ship's direction.
     (define/private (fire)
-      (hash-set! bullet-hash this (make-object bullet% xpos ypos)))
+      (hash-set! bullet-hash this (make-object bullet% xpos ypos dx dy)))
     
+    ;; Method for handling key-events. When the 'w' key is pressed we increase
+    ;; the speed of the ship, unless the ship is going to fast already, and
+    ;; determine the value of the speed in both the x and y-direction.
+    ;; When either'a' or 'd' are pressed we turn the ship.
     (define/public (move key-code)
       (case key-code
-        [(numpad8 #\w up) (unless (>= speed 2)
+        [(#\w) (unless (>= speed 2)
                             (set! speed (+ speed 0.35)))
                           (set! dy (- dy (* speed (cos angle))))
                           (set! dx (- dx (* speed (sin angle))))]
-        [(numpad4 #\a left) (set! angle (+ angle 0.2))]
-        [(numpad2 #\d right) (set! angle (- angle 0.2))]
-        [(numpad2 #\m space) (fire)]))
+        [(#\a) (set! angle (+ angle 0.2))]
+        [(#\d) (set! angle (- angle 0.2))]
+        [(#\space) (fire)]))
     
     (create-ship-image image)
     
