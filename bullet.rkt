@@ -3,6 +3,7 @@
 (provide bullet%)
 (provide bullet-hash)
 
+;; Very much work in progress. Nothing of worth here...
 
 (define bullet-hash (make-hash))
 
