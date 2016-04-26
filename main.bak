@@ -21,7 +21,7 @@
 ;; Asteroids are instances of the asteroid%-class. All the
 ;; new asteroids are stored in asteroids-hash. Since hashes demand
 ;; keys to be associated with it's values we generate a random
-;; key for every hash, though we never actually use the key (as of now).
+;; key for every hash, though we never actually use the key.
 (define (make-init-asteroid)
   (hash-set! asteroids-hash (gensym "asteroid") (make-object asteroid%)))
 
