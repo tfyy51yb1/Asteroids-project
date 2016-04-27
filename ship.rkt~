@@ -35,18 +35,6 @@
         (send dc draw-line
               100 100
               50 75)))
-
-    ;; The x and y coordinates for middle of the ship bitmap.
-
-    (define/public (mid-x)
-      (+ xpos 50))
-    (define/public (mid-y)
-      (+ ypos 50))
-    (define/public (tip-xpos)
-      (- (send this mid-x) (* 50 (sin angle))))
-    (define/public (tip-ypos)
-      (- (send this mid-y) (* 50 (cos angle))))
-      
     
     ;; Currently out of order... The idea is to create instances of the bullet%
     ;; class when the ship fires, add these to a hash table and then update
@@ -54,9 +42,7 @@
     ;; so that bullets are created at the front of the ship, irregardless of the
     ;; ship's direction.
     (define/private (fire)
-      (hash-set! bullet-hash (gensym "bullet")
-                 (make-object bullet% (send this tip-xpos) (send this tip-ypos)
-                   (- (* 5 (sin angle))) (- (* 5 (cos angle))))))
+      (hash-set! bullet-hash (gensym "bullet") (make-object bullet% xpos ypos dx dy)))
     
     ;; Method for handling key-events. When the 'w' key is pressed we increase
     ;; the speed of the ship, unless the ship is going to fast already, and
