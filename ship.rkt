@@ -15,11 +15,11 @@
                 [angle (/ pi 4)] ;The angle at which the ship is turned.
                 [image (make-bitmap 100 100)]) ;A bitmap to draw the ship in.
     
-
+    
     ;; Method which provides the bitmap.
     (define/public (get-image)
       image)
-
+    
     ;; Method for drawing the ship in the bitmap.
     (define/private (create-ship-image bitmap-target)
       (let ((dc (new bitmap-dc% [bitmap bitmap-target])))
@@ -42,7 +42,8 @@
     ;; so that bullets are created at the front of the ship, irregardless of the
     ;; ship's direction.
     (define/private (fire)
-      (hash-set! bullet-hash (gensym "bullet") (make-object bullet% xpos ypos dx dy)))
+      (let ([bullet-name (gensym "bullet")])
+        (hash-set! bullet-hash bullet-name (make-object bullet% 1 xpos ypos (- (* 5 (sin angle))) (- (* 5 (cos angle))) bullet-name))))
     
     ;; Method for handling key-events. When the 'w' key is pressed we increase
     ;; the speed of the ship, unless the ship is going to fast already, and
@@ -50,10 +51,10 @@
     ;; When either'a' or 'd' are pressed we turn the ship.
     (define/public (move key-code)
       (case key-code
-        [(#\w) (unless (>= speed 2)
-                            (set! speed (+ speed 0.35)))
-                          (set! dy (- dy (* speed (cos angle))))
-                          (set! dx (- dx (* speed (sin angle))))]
+        [(#\w) (unless (>= speed 0.35)
+                 (set! speed (+ speed 1)))
+               (set! dy (- dy (* speed (cos angle))))
+               (set! dx (- dx (* speed (sin angle))))]
         [(#\a) (set! angle (+ angle 0.2))]
         [(#\d) (set! angle (- angle 0.2))]
         [(#\space) (fire)]))
