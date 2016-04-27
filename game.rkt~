@@ -64,7 +64,9 @@
     ;; Currently, eh, unusable, to say the least...
     (define (update-bullets bullet-hash dc)
       (for-each (lambda (bullet)
-                  (let*  ([image (send bullet get-image)]
+                  (let*  ([bullet-name (get-field name bullet)]
+                          [health (get-field health bullet)]
+                          [image (send bullet get-image)]
                           [image-width (send image get-width)]
                           [image-height (send image get-height)]
                           [angle (get-field angle bullet)]
@@ -75,6 +77,12 @@
                     
                     ;; Drawing
                     (send dc draw-bitmap image xpos ypos)
+                    
+                    ;; Logic
+                    (set! health (- health 0.005))
+                    (set-field! health bullet health)
+                    (when (< health 0.001)
+                      (send bullet destroy-bullet bullet-name))
                     
                     ;; Physics
                     (set! xpos (+ xpos dx))
@@ -89,7 +97,9 @@
     ;; calculates the asteroids' new positions and draws them.
     (define (update-asteroids asteroids-hash dc)
       (for-each (lambda (asteroid)
-                  (let* ([image (send asteroid get-image)]
+                  (let* ([asteroid-name (get-field name asteroid)]
+                         [health (get-field health asteroid)]
+                         [image (send asteroid get-image)]
                          [image-width (send image get-width)]
                          [image-height (send image get-height)]
                          [angle (get-field angle asteroid)]
@@ -100,10 +110,12 @@
                     
                     ;; Drawing
                     (send dc draw-bitmap image xpos ypos)
-
+                    
                     ;; Physics
+                    
                     (set! xpos (+ xpos dx))
                     (set! ypos (+ ypos dy))
+                    
                     (set-field! xpos asteroid xpos)
                     (set-field! ypos asteroid ypos)
                     (set-field! dy asteroid dy)

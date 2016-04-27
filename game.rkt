@@ -11,17 +11,16 @@
     ;; that the screen "wraps around the edges",
     ;; i.e. when an object, obj, passes outside
     ;; of the screen on one side, it reappears
-    ;; at the opposite side.
+    ;; at the opposite side when the middle of the object
+    ;;passes through the edge.
     (define (screen-wrap obj)
-      (let* ([xpos (get-field xpos obj)]
-             [ypos (get-field ypos obj)])
+      (let* ([xpos (send obj mid-x)]
+             [ypos (send obj mid-y)])
         (cond
-          [(> xpos 1920) (set! xpos 0)]
-          [(< xpos 0) (set! xpos 1920)]
-          [(> ypos 1080) (set! ypos 0)]
-          [(< ypos 0) (set! ypos 1080)])
-        (set-field! xpos obj xpos)
-        (set-field! ypos obj ypos)))
+          [(> xpos 1920) (send obj set-mid-x! 0)]
+          [(< xpos 0) (send obj set-mid-x! 1920)]
+          [(> ypos 1080) (send obj set-mid-y! 0)]
+          [(< ypos 0) (send obj set-mid-y! 1080)])))
     
     ;; update-ship uses parameters provided by the
     ;; ship object, calculates the ship's new position
@@ -64,7 +63,9 @@
     ;; Currently, eh, unusable, to say the least...
     (define (update-bullets bullet-hash dc)
       (for-each (lambda (bullet)
-                  (let*  ([image (send bullet get-image)]
+                  (let*  ([bullet-name (get-field name bullet)]
+                          [health (get-field health bullet)]
+                          [image (send bullet get-image)]
                           [image-width (send image get-width)]
                           [image-height (send image get-height)]
                           [angle (get-field angle bullet)]
@@ -75,6 +76,12 @@
                     
                     ;; Drawing
                     (send dc draw-bitmap image xpos ypos)
+                    
+                    ;; Logic
+                    (set! health (- health 0.005))
+                    (set-field! health bullet health)
+                    (when (< health 0.001)
+                      (send bullet destroy-bullet bullet-name))
                     
                     ;; Physics
                     (set! xpos (+ xpos dx))
@@ -89,7 +96,9 @@
     ;; calculates the asteroids' new positions and draws them.
     (define (update-asteroids asteroids-hash dc)
       (for-each (lambda (asteroid)
-                  (let* ([image (send asteroid get-image)]
+                  (let* ([asteroid-name (get-field name asteroid)]
+                         [health (get-field health asteroid)]
+                         [image (send asteroid get-image)]
                          [image-width (send image get-width)]
                          [image-height (send image get-height)]
                          [angle (get-field angle asteroid)]
@@ -102,8 +111,10 @@
                     (send dc draw-bitmap image xpos ypos)
                     
                     ;; Physics
+                    
                     (set! xpos (+ xpos dx))
                     (set! ypos (+ ypos dy))
+                    
                     (set-field! xpos asteroid xpos)
                     (set-field! ypos asteroid ypos)
                     (set-field! dy asteroid dy)
