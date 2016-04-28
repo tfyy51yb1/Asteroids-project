@@ -13,14 +13,6 @@
                                 [height 1080]))
 
 
-;; make-init-asteroid is a procedure for creating asteroids.
-;; Asteroids are instances of the asteroid%-class. All the
-;; new asteroids are stored in asteroids-hash. Since hashes demand
-;; keys to be associated with it's values we generate a random
-;; key for every hash.
-(define (make-init-asteroid)
-  (let ([asteroid-name (gensym "asteroid")])
-    (hash-set! asteroids-hash asteroid-name (make-object asteroid% asteroid-name))))
 
 ;; Create an instance of the ship%-class which is to be
 ;; controlled by the player.
@@ -35,15 +27,8 @@
 ;; Initialize the game. Currently all this entails is
 ;; creating some asteroids. Procedure to be expanded and revised.
 (define (init-game)
-  (make-init-asteroid)
-  (make-init-asteroid)
-  (make-init-asteroid)
-  (make-init-asteroid)
-  (make-init-asteroid)
-  (make-init-asteroid)
-  (make-init-asteroid)
-  (make-init-asteroid)
-  (make-init-asteroid))
+  (make-object asteroid%)
+  (make-object asteroid%))
 
 ;; Define a class, game-canvas%, by inheriting from canvas%. game-canvas%
 ;; is defined to call a some method, keyboard-handler, when a key-event occurs,
@@ -88,5 +73,5 @@
 (define (start-game)
   (init-game)
   (send *asteroids-window* show #t)
-  (send *game-timer* start 50)
+  (send *game-timer* start 16)
   (send *asteroids-game-canvas* focus))

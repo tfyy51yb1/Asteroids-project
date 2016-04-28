@@ -11,17 +11,16 @@
     ;; that the screen "wraps around the edges",
     ;; i.e. when an object, obj, passes outside
     ;; of the screen on one side, it reappears
-    ;; at the opposite side.
+    ;; at the opposite side when the middle of the object
+    ;;passes through the edge.
     (define (screen-wrap obj)
-      (let* ([xpos (get-field xpos obj)]
-             [ypos (get-field ypos obj)])
+      (let* ([xpos (send obj mid-x)]
+             [ypos (send obj mid-y)])
         (cond
-          [(> xpos 1920) (set! xpos 0)]
-          [(< xpos 0) (set! xpos 1920)]
-          [(> ypos 1080) (set! ypos 0)]
-          [(< ypos 0) (set! ypos 1080)])
-        (set-field! xpos obj xpos)
-        (set-field! ypos obj ypos)))
+          [(> xpos 1920) (send obj set-mid-x! 0)]
+          [(< xpos 0) (send obj set-mid-x! 1920)]
+          [(> ypos 1080) (send obj set-mid-y! 0)]
+          [(< ypos 0) (send obj set-mid-y! 1080)])))
     
     ;; update-ship uses parameters provided by the
     ;; ship object, calculates the ship's new position
@@ -102,7 +101,6 @@
                          [image (send asteroid get-image)]
                          [image-width (send image get-width)]
                          [image-height (send image get-height)]
-                         [angle (get-field angle asteroid)]
                          [xpos  (get-field xpos asteroid)]
                          [ypos (get-field ypos asteroid)]
                          [dx (get-field dx asteroid)]

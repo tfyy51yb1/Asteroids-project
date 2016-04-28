@@ -101,7 +101,6 @@
                          [image (send asteroid get-image)]
                          [image-width (send image get-width)]
                          [image-height (send image get-height)]
-                         [angle (get-field angle asteroid)]
                          [xpos  (get-field xpos asteroid)]
                          [ypos (get-field ypos asteroid)]
                          [dx (get-field dx asteroid)]
@@ -109,9 +108,16 @@
                     
                     ;; Drawing
                     (send dc draw-bitmap image xpos ypos)
+
+                     
+                    ;; Logic
+                    (set! health (- health 0.005))
+                    (set-field! health asteroid health)
+                    (when (< health 0.001)
+                      (send asteroid destroy-asteroid asteroid-name))
+                    
                     
                     ;; Physics
-                    
                     (set! xpos (+ xpos dx))
                     (set! ypos (+ ypos dy))
                     
