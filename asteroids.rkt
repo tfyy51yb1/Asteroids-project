@@ -41,15 +41,6 @@
     ;; Method which provides us with the bitmap containing the asteroid.
     (define/public (get-image)
       image)
-
-    (define/public (mid-x)
-      (+ xpos 100))
-    (define/public (mid-y)
-      (+ ypos 100))
-    (define/public (set-mid-x! new-mid-x)
-      (set! xpos (- new-mid-x 100)))
-    (define/public (set-mid-y! new-mid-y)
-      (set! ypos (- new-mid-y 100)))
     
     ;; A method for destroying an asteroid and at the same time creating 2 new, smaller asteroids.
     ;; This creates the illusion, kind of, of the asteroid breaking into pieces.

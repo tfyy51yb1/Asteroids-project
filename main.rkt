@@ -73,5 +73,5 @@
 (define (start-game)
   (init-game)
   (send *asteroids-window* show #t)
-  (send *game-timer* start 50)
+  (send *game-timer* start 16)
   (send *asteroids-game-canvas* focus))
