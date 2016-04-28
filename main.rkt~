@@ -8,11 +8,22 @@
 ;; Create an instance of the frame% class, *game-window*, on which we can put a
 ;; canvas.
 (define *asteroids-window* (new frame%
-                                [label "Asteroids"]
-                                [width 1920]
-                                [height 1080]))
+                           [label "Asteroids"]
+                           [width 1920]
+                           [height 1080]))
 
+;; Create a hash table, asteroids-hash, in which all the asteroid-objects
+;; will be stored. We use hash tables to store stuff throughout the project
+;; because they're mutable, and it turns out to be rather convenient.
+(define asteroids-hash (make-hash))
 
+;; make-init-asteroid is a procedure for creating asteroids.
+;; Asteroids are instances of the asteroid%-class. All the
+;; new asteroids are stored in asteroids-hash. Since hashes demand
+;; keys to be associated with it's values we generate a random
+;; key for every hash, though we never actually use the key (as of now).
+(define (make-init-asteroid)
+  (hash-set! asteroids-hash (gensym "asteroid") (make-object asteroid%)))
 
 ;; Create an instance of the ship%-class which is to be
 ;; controlled by the player.
@@ -27,8 +38,9 @@
 ;; Initialize the game. Currently all this entails is
 ;; creating some asteroids. Procedure to be expanded and revised.
 (define (init-game)
-  (make-object asteroid%)
-  (make-object asteroid%))
+  (make-init-asteroid)
+  (make-init-asteroid)
+  (make-init-asteroid))
 
 ;; Define a class, game-canvas%, by inheriting from canvas%. game-canvas%
 ;; is defined to call a some method, keyboard-handler, when a key-event occurs,
@@ -60,7 +72,7 @@
        [keyboard-handler (lambda (key-event)
                            (let ((key-code (send key-event get-key-code)))
                              (when (not (equal? key-code 'release))
-                               (send *player-1* move key-code))))]))
+                                 (send *player-1* move key-code))))]))
 
 ;; Define a timer which on every callback refreshes the canvas.
 (define *game-timer* (new timer%
@@ -73,5 +85,5 @@
 (define (start-game)
   (init-game)
   (send *asteroids-window* show #t)
-  (send *game-timer* start 16)
+  (send *game-timer* start 17)
   (send *asteroids-game-canvas* focus))

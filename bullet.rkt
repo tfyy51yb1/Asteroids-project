@@ -20,6 +20,17 @@
     
     (define/public (get-image)
       image)
+    
+;;the x and y coordinets in the middle of the bitmap.
+    (define/public (mid-x)
+      (+ xpos 5))
+    (define/public (mid-y)
+      (+ ypos 5))
+    (define/public (set-mid-x! new-mid-x)
+      (set! xpos (- new-mid-x 5)))
+    (define/public (set-mid-y! new-mid-y)
+      (set! ypos (- new-mid-y 5)))
+    
     (define/public (destroy-bullet name)
       (hash-remove! bullet-hash name))
     
